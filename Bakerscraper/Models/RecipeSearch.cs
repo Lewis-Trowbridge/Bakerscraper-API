@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 using Bakerscraper.Enums;
 
 namespace Bakerscraper.Models
 {
-    public struct RecipeIngredient
+    public class RecipeSearch
     {
-        public string Name { get; set; }
-        public int Quantity { get; set; }
+        [Required]
+        public string String { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public RecipeIngredientUnit Unit { get; set; }
+        [Required]
+        public RecipeSearchType Type { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bakerscraper.Models;
+using Bakerscraper.Factories;
 
 namespace Bakerscraper.Controllers
 {
@@ -17,9 +18,11 @@ namespace Bakerscraper.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("search")]
-        public Recipe Search(string searchString)
+        public Recipe Search([FromQuery]RecipeSearch searchRequest)
         {
-            throw new NotImplementedException();
+            var factory = new RecipeSearchFactory();
+            var searcher = factory.CreateSearch(searchRequest.Type);
+            return searcher.Search(searchRequest.String);
         }
     }
 }
