@@ -24,4 +24,10 @@
     <ProjectReference Include="..\Bakerscraper\Bakerscraper.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Searchers\Assets\testsearch.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

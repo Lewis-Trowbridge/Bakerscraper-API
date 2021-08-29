@@ -18,7 +18,7 @@ namespace Bakerscraper.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("search")]
-        public Recipe Search([FromQuery]RecipeSearch searchRequest)
+        public List<Recipe> Search([FromQuery]RecipeSearch searchRequest)
         {
             var factory = new RecipeSearchFactory();
             var searcher = factory.CreateSearch(searchRequest.Type);

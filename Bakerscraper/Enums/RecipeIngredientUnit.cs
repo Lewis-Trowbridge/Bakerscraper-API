@@ -10,6 +10,9 @@ namespace Bakerscraper.Enums
         Grams,
         Kilograms,
         Liters,
-        Milliliters
+        Milliliters,
+        Teaspoons,
+        Tablespoons,
+        Unspecified
     }
 }
