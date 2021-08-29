@@ -12,11 +12,12 @@ namespace Bakerscraper.Tests.Searchers
 {
     public class BBCGoodFoodRecipeSearchTest
    {
-        [Fact]
-        public async void BBCGoodFoodSearcher_GivenString_CallsHttpClientCorrectly()
+        [Theory]
+        [InlineData("test", "test")]
+        [InlineData("space test", "space+test")]
+        public async void BBCGoodFoodSearcher_GivenString_CallsHttpClientCorrectly(string testSearchString, string expectedSearchString)
         {
-            var testSearchString = "test";
-            var expectedLink = "https://www.bbcgoodfood.com/search/recipes?q=test";
+            var expectedLink = "https://www.bbcgoodfood.com/search/recipes?q=" + expectedSearchString;
             var mockHandler = new Mock<HttpMessageHandler>();
             mockHandler
                 .Protected()
