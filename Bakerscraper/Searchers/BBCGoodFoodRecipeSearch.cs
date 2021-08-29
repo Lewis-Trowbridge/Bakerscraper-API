@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Net.Http;
 
 namespace Bakerscraper.Searchers
@@ -11,6 +12,7 @@ namespace Bakerscraper.Searchers
     {
 
         private HttpClient httpClient;
+        private const string baseUrl = "https://www.bbcgoodfood.com/";
 
         public BBCGoodFoodRecipeSearch()
         {
@@ -22,9 +24,17 @@ namespace Bakerscraper.Searchers
             httpClient = client;
         }
 
-        public List<Recipe> Search(string searchString)
+        public async Task<List<Recipe>> Search(string searchString)
         {
-            throw new NotImplementedException();
+            var searchHTML = await GetGoodFoodHTML(searchString);
+            return new List<Recipe>();
         }
+
+        private async Task<string> GetGoodFoodHTML(string searchString)
+        {
+            var response = await httpClient.GetAsync(baseUrl + "search/recipes?q=" + HttpUtility.UrlEncode(searchString));
+            return await response.Content.ReadAsStringAsync();
+        }
+
     }
 }

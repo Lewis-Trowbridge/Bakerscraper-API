@@ -13,7 +13,7 @@ namespace Bakerscraper.Tests.Searchers
     public class BBCGoodFoodRecipeSearchTest
    {
         [Fact]
-        public void BBCGoodFoodSearcher_GivenString_CallsHttpClientCorrectly()
+        public async void BBCGoodFoodSearcher_GivenString_CallsHttpClientCorrectly()
         {
             var testSearchString = "test";
             var expectedLink = "https://www.bbcgoodfood.com/search/recipes?q=test";
@@ -23,11 +23,13 @@ namespace Bakerscraper.Tests.Searchers
                .Setup<Task<HttpResponseMessage>>(
                   "SendAsync",
                   ItExpr.IsAny<HttpRequestMessage>(),
-                  ItExpr.IsAny<CancellationToken>());
+                  ItExpr.IsAny<CancellationToken>())
+               .ReturnsAsync(new HttpResponseMessage());
             var mockClient = new HttpClient(mockHandler.Object);
             var testSearcher = new BBCGoodFoodRecipeSearch(mockClient);
 
-            testSearcher.Search(testSearchString);
+            await testSearcher.Search(testSearchString);
+
             mockHandler.Protected().Verify(
                 "SendAsync",
                 Times.Once(),
@@ -36,7 +38,7 @@ namespace Bakerscraper.Tests.Searchers
         }
 
         [Fact]
-        public void BBCGoodFoodSearcher_GivenCorrectString_ReturnsCorrectOutput()
+        public async void BBCGoodFoodSearcher_GivenCorrectString_ReturnsCorrectOutput()
         {
            
             var testSearchString = "test";
@@ -55,7 +57,7 @@ namespace Bakerscraper.Tests.Searchers
 
             var expectedRecipes = BBCGoodFoodRecipeSearchTestHelper.GetBBCGoodFoodRecipes();
 
-            var realRecipes = testSearcher.Search(testSearchString);
+            var realRecipes = await testSearcher.Search(testSearchString);
 
             Assert.Equal(expectedRecipes, realRecipes);
         }

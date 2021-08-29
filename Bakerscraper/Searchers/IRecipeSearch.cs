@@ -8,6 +8,6 @@ namespace Bakerscraper.Searchers
 {
     public interface IRecipeSearch
     {
-        public abstract List<Recipe> Search(string searchString);
+        public abstract Task<List<Recipe>> Search(string searchString);
     }
 }
