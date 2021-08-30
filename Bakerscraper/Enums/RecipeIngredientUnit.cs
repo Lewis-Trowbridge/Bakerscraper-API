@@ -9,8 +9,8 @@ namespace Bakerscraper.Enums
     {
         Grams,
         Kilograms,
-        Liters,
         Milliliters,
+        Liters,
         Teaspoons,
         Tablespoons,
         Unspecified

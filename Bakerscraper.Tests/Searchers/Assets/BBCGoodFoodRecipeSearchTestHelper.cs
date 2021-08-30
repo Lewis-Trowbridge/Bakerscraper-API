@@ -35,17 +35,29 @@ namespace Bakerscraper.Tests.Searchers.Assets
                         {
                             Name = "Cocoa powder",
                             Quantity = 2,
+                            Unit = RecipeIngredientUnit.Tablespoons
+                        },
+                        new RecipeIngredient
+                        {
+                            Name = "Medium egg",
+                            Quantity = 1,
                             Unit = RecipeIngredientUnit.Unspecified
                         },
                         new RecipeIngredient
                         {
                             Name = "Milk",
-                            Quantity = 1,
+                            Quantity = 3,
                             Unit = RecipeIngredientUnit.Tablespoons
                         },
                         new RecipeIngredient
                         {
                             Name = "Vegetable oil or sunflower oil",
+                            Quantity = 3,
+                            Unit = RecipeIngredientUnit.Tablespoons
+                        },
+                        new RecipeIngredient
+                        {
+                            Name = "A few drops of vanilla essence or other essence (orange or peppermint work well)",
                             Quantity = null,
                             Unit = RecipeIngredientUnit.Unspecified
                         },
