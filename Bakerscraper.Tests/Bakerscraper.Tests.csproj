@@ -25,6 +25,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Searchers\Assets\testmeltinthemiddle.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Searchers\Assets\testmicrowave.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Searchers\Assets\testsearch.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
