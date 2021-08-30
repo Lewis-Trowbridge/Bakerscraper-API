@@ -114,11 +114,11 @@ namespace Bakerscraper.Searchers
             var instructionTriples = tripleStore.GetTriplesWithPredicate(schemaRecipeInstructionsUri);
             var steps = new List<RecipeStep>();
             var count = 1;
+            var doc = new HtmlDocument();
             foreach (var instructionTriple in instructionTriples)
             {
                 var textNode = tripleStore.GetTriplesWithSubjectPredicate(instructionTriple.Object, factory.CreateUriNode(schemaTextUri)).First();
                 var textHtml = ((LiteralNode)textNode.Object).Value;
-                var doc = new HtmlDocument();
                 doc.LoadHtml(textHtml);
                 steps.Add(new RecipeStep
                 {
