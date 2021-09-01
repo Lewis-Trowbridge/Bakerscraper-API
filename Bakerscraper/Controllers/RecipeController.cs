@@ -15,13 +15,20 @@ namespace Bakerscraper.Controllers
     [ApiController]
     public class RecipeController : ControllerBase
     {
+
+        private readonly IRecipeSearchFactory searchFactory;
+
+        public RecipeController(IRecipeSearchFactory searchFactory)
+        {
+            this.searchFactory = searchFactory;
+        }
+
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("search")]
         public async Task<List<Recipe>> Search([FromQuery]RecipeSearch searchRequest)
         {
-            var factory = new RecipeSearchFactory();
-            var searcher = factory.CreateSearch(searchRequest.Type);
+            var searcher = searchFactory.CreateSearch(searchRequest.Type);
             return await searcher.Search(searchRequest.String);
         }
     }

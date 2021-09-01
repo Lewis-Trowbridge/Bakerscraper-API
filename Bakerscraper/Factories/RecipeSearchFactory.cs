@@ -8,7 +8,7 @@ using Bakerscraper.Enums;
 
 namespace Bakerscraper.Factories
 {
-    public class RecipeSearchFactory
+    public class RecipeSearchFactory : IRecipeSearchFactory
     {
         public IRecipeSearch CreateSearch(RecipeSearchType searchType)
         {
