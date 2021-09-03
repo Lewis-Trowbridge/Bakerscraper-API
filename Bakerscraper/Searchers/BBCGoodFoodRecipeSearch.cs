@@ -42,7 +42,7 @@ namespace Bakerscraper.Searchers
             httpClient = client;
         }
 
-        public async Task<List<Recipe>> Search(string searchString)
+        public virtual async Task<List<Recipe>> Search(string searchString)
         {
             var recipes = new List<Recipe>();
             var searchHTML = await GetGoodFoodSearchHTML(searchString);
