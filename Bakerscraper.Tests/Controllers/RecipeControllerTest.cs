@@ -16,11 +16,12 @@ namespace Bakerscraper.Tests.Controllers
     public class RecipeControllerTest
     {
         [Fact]
-        public async void RecipeController_WhenCalledWithBBCGoodFood_CallsConstructor()
-        {
-            var factoryMock = new Mock<IRecipeSearchFactory>();
-            var searcherMock = new Mock<BBCGoodFoodRecipeSearch>();
+        public async void RecipeController_WhenCalledWithBBCGoodFood_CallsFactoryWithEnum()
+        {   
+            // Mock a searcher to avoid using real searcher code in the controller
+            var searcherMock = new Mock<IRecipeSearch>();
             searcherMock.Setup(mock => mock.Search(It.IsAny<string>()).Result).Returns(new List<Recipe>());
+            var factoryMock = new Mock<IRecipeSearchFactory>();
             factoryMock.Setup(mock => mock.CreateSearch(RecipeSearchType.BBCGoodFood)).Returns(searcherMock.Object);
 
             var testRequest = new RecipeSearch { Type = RecipeSearchType.BBCGoodFood };
