@@ -1,0 +1,8 @@
+Bakerscraper.Tests/
+LICENSE
+.github/
+.gitignore
+.gitattributes
+.vscode/
+Bakerscraper/bin/
+Bakerscraper/obj/
