@@ -13,4 +13,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /app
 COPY --from=build /app .
 
+ENV ASPNETCORE_URLS http://+
+
 ENTRYPOINT [ "/app/Bakerscraper" ]
