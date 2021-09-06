@@ -22,5 +22,10 @@ namespace Bakerscraper.Models
                 return (Number == o.Number) && (Text == o.Text);
             }
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Number, Text);
+        }
     }
 }

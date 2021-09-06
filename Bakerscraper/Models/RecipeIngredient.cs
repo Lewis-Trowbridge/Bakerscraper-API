@@ -27,5 +27,10 @@ namespace Bakerscraper.Models
                 return (Name == o.Name) && (Quantity == o.Quantity) && (Unit == o.Unit);
             }
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, Quantity, Unit);
+        }
     }
 }

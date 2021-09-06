@@ -23,5 +23,10 @@ namespace Bakerscraper.Models
                 return (Name == o.Name) && (Ingredients.SequenceEqual(o.Ingredients)) && (Steps.SequenceEqual(o.Steps));
             }
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, Ingredients, Steps);
+        }
     }
 }

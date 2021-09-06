@@ -160,7 +160,7 @@ namespace Bakerscraper.Searchers
             return steps;
         }
 
-        private RecipeIngredientUnit GetIngredientUnitFromString(string unit)
+        private static RecipeIngredientUnit GetIngredientUnitFromString(string unit)
         {
             switch (unit)
             {
