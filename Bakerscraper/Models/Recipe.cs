@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Bakerscraper.Enums;
 
 namespace Bakerscraper.Models
 {
@@ -10,6 +11,7 @@ namespace Bakerscraper.Models
         public string Name { get; set; }
         public List<RecipeIngredient> Ingredients { get; set; }
         public List<RecipeStep> Steps { get; set; }
+        public RecipeSearchType Source { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -20,13 +22,13 @@ namespace Bakerscraper.Models
             else
             {
                 Recipe o = (Recipe)obj;
-                return (Name == o.Name) && (Ingredients.SequenceEqual(o.Ingredients)) && (Steps.SequenceEqual(o.Steps));
+                return (Name == o.Name) && (Ingredients.SequenceEqual(o.Ingredients)) && (Steps.SequenceEqual(o.Steps) && (Source == o.Source));
             }
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Name, Ingredients, Steps);
+            return HashCode.Combine(Name, Ingredients, Steps, Source);
         }
     }
 }
