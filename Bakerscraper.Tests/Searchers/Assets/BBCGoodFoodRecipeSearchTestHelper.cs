@@ -90,7 +90,8 @@ namespace Bakerscraper.Tests.Searchers.Assets
                             Number = 4,
                             Text = "Centre your mug in the middle of the microwave oven and cook on High for 1½ -2 mins, or until it has stopped rising and is firm to the touch."
                         }
-                    }
+                    },
+                    Source = RecipeSearchType.BBCGoodFood,
                 },
                 new Recipe
                 {
@@ -164,7 +165,8 @@ namespace Bakerscraper.Tests.Searchers.Assets
                             Number = 2,
                             Text = "Push the chocolate into the centre of the batter, and microwave the cake on high for 45 secs until cooked on the outside with a liquid molten centre. Serve hot with ice cream or cream, if you like."
                         }
-                    }
+                    },
+                    Source = RecipeSearchType.BBCGoodFood,
                 }
             };
         }

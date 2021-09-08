@@ -105,6 +105,7 @@ namespace Bakerscraper.Searchers
             recipe.Name = nameNode.Value;
             recipe.Steps = GetStepsFromTripleStore(recipeTripleStore).ToList();
             recipe.Ingredients = GetIngredientsFromTripleStore(recipeTripleStore).ToList();
+            recipe.Source = RecipeSearchType.BBCGoodFood;
 
             return recipe;
         }
