@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Bakerscraper.Models
 {
-    public class RecipeStep
+    public struct RecipeStep
     {
         public int Number { get; set; }
         public string Text { get; set; }

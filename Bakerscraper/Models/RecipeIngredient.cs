@@ -7,7 +7,7 @@ using Bakerscraper.Enums;
 
 namespace Bakerscraper.Models
 {
-    public class RecipeIngredient
+    public struct RecipeIngredient
     {
         public string Name { get; set; }
         public int? Quantity { get; set; }
