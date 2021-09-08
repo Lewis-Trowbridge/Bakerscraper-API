@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 using System.Net;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
@@ -41,6 +42,17 @@ namespace Bakerscraper.Tests.Functional_Tests
             var response = await client.GetAsync("/swagger");
 
             Assert.Equal(expectedResponseType, response.Content.Headers.ContentType.MediaType);
+        }
+
+        [Fact]
+        public async void Get_RecipeSearch_ReturnsCorrectJSON()
+        {
+            var expectedResponse = File.ReadAllText("Functional Tests/Assets/ksearchjson.json");
+            var client = _factory.CreateClient();
+
+            var response = await client.GetAsync("/api/recipe/search?string=k");
+
+            Assert.Equal(expectedResponse, await response.Content.ReadAsStringAsync());
         }
 
     }
