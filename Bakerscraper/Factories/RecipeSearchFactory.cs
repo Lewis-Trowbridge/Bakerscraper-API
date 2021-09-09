@@ -15,6 +15,7 @@ namespace Bakerscraper.Factories
             return searchType switch
             {
                 RecipeSearchType.BBCGoodFood => new BBCGoodFoodRecipeSearch(),
+                RecipeSearchType.Cookpad => new CookpadRecipeSearch(),
                 _ => throw new TypeLoadException(),
             };
         }

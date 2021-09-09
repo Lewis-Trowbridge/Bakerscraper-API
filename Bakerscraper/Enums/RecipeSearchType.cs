@@ -7,6 +7,7 @@ namespace Bakerscraper.Enums
 {
     public enum RecipeSearchType
     {
-        BBCGoodFood
+        BBCGoodFood,
+        Cookpad
     }
 }

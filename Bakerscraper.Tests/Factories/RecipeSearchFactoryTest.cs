@@ -21,5 +21,15 @@ namespace Bakerscraper.Tests.Factories
 
             Assert.IsType<BBCGoodFoodRecipeSearch>(result);
         }
+
+        [Fact]
+        public void SearchFactory_GivenCookpad_ReturnsCookpadFoodSearcher()
+        {
+            RecipeSearchFactory testFactory = new RecipeSearchFactory();
+
+            var result = testFactory.CreateSearch(RecipeSearchType.Cookpad);
+
+            Assert.IsType<CookpadRecipeSearch>(result);
+        }
     }
 }
