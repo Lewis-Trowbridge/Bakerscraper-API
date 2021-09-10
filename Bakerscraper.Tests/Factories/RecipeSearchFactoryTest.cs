@@ -23,7 +23,7 @@ namespace Bakerscraper.Tests.Factories
         }
 
         [Fact]
-        public void SearchFactory_GivenCookpad_ReturnsCookpadFoodSearcher()
+        public void SearchFactory_GivenCookpad_ReturnsCookpadSearcher()
         {
             RecipeSearchFactory testFactory = new RecipeSearchFactory();
 
