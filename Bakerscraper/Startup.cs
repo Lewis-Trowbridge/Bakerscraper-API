@@ -38,6 +38,9 @@ namespace Bakerscraper
                     Version = "v1"
                 });
             });
+
+            services.AddHealthChecks();
+
             services.AddScoped<IRecipeSearchFactory, RecipeSearchFactory>();
         }
 
@@ -60,6 +63,7 @@ namespace Bakerscraper
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
             });
         }
     }
