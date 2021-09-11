@@ -1,9 +1,9 @@
 
-name: Publish to Google Artifcact Registry
+name: Publish to Google Artifact Registry
 
 on:
   push:
-    branches: [ main, google-artifact-registry ]
+    branches: [ main ]
 
 jobs:
   build:
