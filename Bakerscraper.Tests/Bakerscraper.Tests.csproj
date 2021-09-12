@@ -42,6 +42,9 @@
     <None Update="Searchers\Assets\testmicrowave.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Searchers\Assets\testrhubarbcake.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Searchers\Assets\testsearch.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

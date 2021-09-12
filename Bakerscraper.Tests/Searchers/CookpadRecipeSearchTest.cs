@@ -42,7 +42,8 @@ namespace Bakerscraper.Tests.Searchers
         {
             var testSearchString = "cake";
             var expectedSearchUrl = "https://cookpad.com/uk/search/cake?event=search.typed_query";
-            var expectedCauliflowerCakeUrl = "";
+            var expectedCauliflowerCakeUrl = "https://cookpad.com/uk/recipes/15460366-cauliflower-cake";
+            var expectedRhubarbCakeUrl = "https://cookpad.com/uk/recipes/15390388-my-rhubarb-ginger-pistachio-cake";
             var expectedResult = CookpadRecipeSearchTestHelper.GetCookpadRecipes();
 
 
@@ -54,6 +55,9 @@ namespace Bakerscraper.Tests.Searchers
             mockHandler
                 .SetupRequest(expectedCauliflowerCakeUrl)
                 .ReturnsResponse(HttpStatusCode.OK, File.ReadAllText("Searchers/Assets/testcauliflowercake.html"));
+            mockHandler
+                .SetupRequest(expectedRhubarbCakeUrl)
+                .ReturnsResponse(HttpStatusCode.OK, File.ReadAllText("Searchers/Assets/testrhubarbcake.html"));
 
             var testSearcher = new CookpadRecipeSearch(mockClient);
 
