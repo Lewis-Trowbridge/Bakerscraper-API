@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Web;
 using System.Text;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 using Bakerscraper.Models;
 
 namespace Bakerscraper.Searchers
@@ -14,7 +15,7 @@ namespace Bakerscraper.Searchers
 
         // Constants for HTML retrieval
         private HttpClient httpClient;
-        private const string baseUrl = "https://cookpad.com/uk";
+        private const string baseUrl = "https://cookpad.com";
 
         public CookpadRecipeSearch()
         {
@@ -28,16 +29,32 @@ namespace Bakerscraper.Searchers
 
         public async Task<List<Recipe>> Search(string searchString)
         {
-            var recipeUris = await GetRecipeUris(searchString);
             var recipes = new List<Recipe>();
+            var recipeUris = await GetRecipeUris(searchString);
+            if (!recipeUris.Any())
+            {
+                return recipes;
+            }
             return recipes;
         }
 
-        private async Task<List<Uri>> GetRecipeUris(string searchString)
+        private async Task<IEnumerable<Uri>> GetRecipeUris(string searchString)
         {
-            var searchUrl = $"{baseUrl}/search/{Uri.EscapeDataString(searchString)}?event=search.typed_query";
+            var searchUrl = $"{baseUrl}/uk/search/{Uri.EscapeDataString(searchString)}?event=search.typed_query";
             var response = await httpClient.GetAsync(searchUrl);
-            return new List<Uri>();
+            var doc = new HtmlDocument();
+            doc.Load(await response.Content.ReadAsStreamAsync());
+
+            var recipeUriNodes = doc.DocumentNode.SelectNodes("//a[@class='block-link__main']");
+
+            if (recipeUriNodes != null && recipeUriNodes.Any())
+            {
+                return recipeUriNodes.Select(recipeUriNode => new Uri(baseUrl + recipeUriNode.Attributes["href"].Value));
+            }
+            else
+            {
+                return new List<Uri>();
+            }
         }
     }
 }

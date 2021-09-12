@@ -45,8 +45,7 @@ namespace Bakerscraper.Searchers
         public async Task<List<Recipe>> Search(string searchString)
         {
             var recipes = new List<Recipe>();
-            var searchHTML = await GetGoodFoodSearchHTML(searchString);
-            var recipeUris = GetGoodFoodRecipeUris(searchHTML);
+            var recipeUris = await GetGoodFoodRecipeUris(searchString);
             if (recipeUris.Count() == 0)
             {
                 return recipes;
@@ -64,16 +63,11 @@ namespace Bakerscraper.Searchers
             return recipes;
         }
 
-        private async Task<string> GetGoodFoodSearchHTML(string searchString)
+        private async Task<IEnumerable<Uri>> GetGoodFoodRecipeUris(string searchString)
         {
             var response = await httpClient.GetAsync(baseUrl + "search/recipes?q=" + HttpUtility.UrlEncode(searchString));
-            return await response.Content.ReadAsStringAsync();
-        }
-
-        private IEnumerable<Uri> GetGoodFoodRecipeUris(string searchHTML)
-        {
             var doc = new HtmlDocument();
-            doc.LoadHtml(searchHTML);
+            doc.Load(await response.Content.ReadAsStreamAsync());
 
             HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//a[@class='img-container img-container--square-thumbnail']");
             if (nodes != null)

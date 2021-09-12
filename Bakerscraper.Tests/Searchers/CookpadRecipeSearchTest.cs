@@ -10,6 +10,7 @@ using Moq;
 using Moq.Contrib.HttpClient;
 using Xunit;
 using Bakerscraper.Searchers;
+using Bakerscraper.Tests.Searchers.Assets;
 
 namespace Bakerscraper.Tests.Searchers
 {
@@ -20,7 +21,7 @@ namespace Bakerscraper.Tests.Searchers
         [InlineData("space test", "space%20test")]
         public async void CookpadSearcher_GivenString_CallsHttpClientCorrectly(string testString, string expectedString)
         {
-            string expectedLink = $"https://cookpad.com/uk/search/{expectedString}?event=search.typed_query";
+            var expectedLink = $"https://cookpad.com/uk/search/{expectedString}?event=search.typed_query";
             var mockHandler = new Mock<HttpMessageHandler>();
 
             var mockClient = mockHandler.CreateClient();
@@ -34,6 +35,31 @@ namespace Bakerscraper.Tests.Searchers
             await testSearcher.Search(testString);
 
             mockHandler.VerifyRequest(expectedLink);
+        }
+
+        [Fact]
+        public async void CookpadSearcher_GivenString_ReturnsCorrectRecipes()
+        {
+            var testSearchString = "cake";
+            var expectedSearchUrl = "https://cookpad.com/uk/search/cake?event=search.typed_query";
+            var expectedCauliflowerCakeUrl = "";
+            var expectedResult = CookpadRecipeSearchTestHelper.GetCookpadRecipes();
+
+
+            var mockHandler = new Mock<HttpMessageHandler>();
+            var mockClient = mockHandler.CreateClient();
+            mockHandler
+                .SetupRequest(expectedSearchUrl)
+                .ReturnsResponse(HttpStatusCode.OK, File.ReadAllText("Searchers/Assets/testcookpadsearch.html"));
+            mockHandler
+                .SetupRequest(expectedCauliflowerCakeUrl)
+                .ReturnsResponse(HttpStatusCode.OK, File.ReadAllText("Searchers/Assets/testcauliflowercake.html"));
+
+            var testSearcher = new CookpadRecipeSearch(mockClient);
+
+            var actualResult = await testSearcher.Search(testSearchString);
+
+            Assert.Equal(expectedResult, actualResult);
         }
     }
 }
