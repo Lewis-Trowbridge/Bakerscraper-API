@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Trace;
 using Bakerscraper.Factories;
 
 namespace Bakerscraper
@@ -41,6 +42,11 @@ namespace Bakerscraper
 
             services.AddHealthChecks();
 
+            services.AddOpenTelemetryTracing(options => options
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddJaegerExporter()
+            );
             services.AddScoped<IRecipeSearchFactory, RecipeSearchFactory>();
         }
 
