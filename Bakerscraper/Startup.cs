@@ -39,6 +39,9 @@ namespace Bakerscraper
                     Version = "v1"
                 });
             });
+
+            services.AddHealthChecks();
+
             services.AddOpenTelemetryTracing(options => options
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
@@ -66,6 +69,7 @@ namespace Bakerscraper
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
             });
         }
     }
