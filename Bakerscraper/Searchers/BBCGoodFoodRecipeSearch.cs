@@ -42,7 +42,7 @@ namespace Bakerscraper.Searchers
             httpClient = client;
         }
 
-        public async Task<List<Recipe>> Search(string searchString)
+        public async Task<IEnumerable<Recipe>> Search(string searchString)
         {
             var recipes = new List<Recipe>();
             var recipeUris = await GetGoodFoodRecipeUris(searchString);
@@ -125,7 +125,7 @@ namespace Bakerscraper.Searchers
                 {
                     Quantity = quantity,
                     Unit = GetIngredientUnitFromString(matchCollection.Groups[2].Value),
-                    Name = matchCollection.Groups[3].Value.UpperCaseFirst()
+                    Name = GenericRecipeSearchHelper.SanitiseString(matchCollection.Groups[3].Value)
 
                 });
             }

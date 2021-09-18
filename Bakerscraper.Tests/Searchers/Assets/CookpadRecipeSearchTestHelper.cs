@@ -52,7 +52,7 @@ namespace Bakerscraper.Tests.Searchers.Assets
                         new RecipeIngredient
                         {
                             Name = "Baking powder",
-                            Quantity = 1.5,
+                            Quantity = 0.5,
                             Unit = RecipeIngredientUnit.Teaspoons
                         },
                         new RecipeIngredient

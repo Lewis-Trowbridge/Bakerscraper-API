@@ -9,8 +9,8 @@ namespace Bakerscraper.Models
     public struct Recipe
     {
         public string Name { get; set; }
-        public List<RecipeIngredient> Ingredients { get; set; }
-        public List<RecipeStep> Steps { get; set; }
+        public IEnumerable<RecipeIngredient> Ingredients { get; set; }
+        public IEnumerable<RecipeStep> Steps { get; set; }
         public RecipeSearchType Source { get; set; }
 
         public override bool Equals(object obj)
