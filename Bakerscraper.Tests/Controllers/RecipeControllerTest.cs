@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net.Http;
 using Bakerscraper.Searchers;
 using Bakerscraper.Factories;
 using Bakerscraper.Models;
@@ -21,16 +22,17 @@ namespace Bakerscraper.Tests.Controllers
             // Mock a searcher to avoid using real searcher code in the controller
             var searcherMock = new Mock<IRecipeSearch>();
             searcherMock.Setup(mock => mock.Search(It.IsAny<string>()).Result).Returns(new List<Recipe>());
-            var factoryMock = new Mock<IRecipeSearchFactory>();
-            factoryMock.Setup(mock => mock.CreateSearch(RecipeSearchType.BBCGoodFood)).Returns(searcherMock.Object);
+            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            var searchFactoryMock = new Mock<IRecipeSearchFactory>();
+            searchFactoryMock.Setup(mock => mock.CreateSearch(RecipeSearchType.BBCGoodFood, httpClientFactoryMock.Object)).Returns(searcherMock.Object);
 
             var testRequest = new RecipeSearch { Type = RecipeSearchType.BBCGoodFood };
 
-            var controller = new RecipeController(factoryMock.Object);
+            var controller = new RecipeController(searchFactoryMock.Object, httpClientFactoryMock.Object);
 
             await controller.Search(testRequest);
 
-            factoryMock.Verify(mock => mock.CreateSearch(RecipeSearchType.BBCGoodFood));
+            searchFactoryMock.Verify(mock => mock.CreateSearch(RecipeSearchType.BBCGoodFood, httpClientFactoryMock.Object));
             
         }
     }

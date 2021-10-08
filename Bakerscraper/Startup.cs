@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
+using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -38,7 +39,8 @@ namespace Bakerscraper
                     Version = "v1"
                 });
             });
-            services.AddScoped<IRecipeSearchFactory, RecipeSearchFactory>();
+            services.AddSingleton<IHttpClientFactory, BakerscraperHttpClientFactory>();
+            services.AddSingleton<IRecipeSearchFactory, RecipeSearchFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

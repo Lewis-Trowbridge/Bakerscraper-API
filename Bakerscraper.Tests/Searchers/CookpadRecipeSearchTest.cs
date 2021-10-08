@@ -25,6 +25,7 @@ namespace Bakerscraper.Tests.Searchers
             var mockHandler = new Mock<HttpMessageHandler>();
 
             var mockClient = mockHandler.CreateClient();
+            mockClient.BaseAddress = new Uri("https://cookpad.com");
             mockHandler
                 .SetupAnyRequest()
                 .ReturnsResponse(HttpStatusCode.OK)
@@ -49,6 +50,7 @@ namespace Bakerscraper.Tests.Searchers
 
             var mockHandler = new Mock<HttpMessageHandler>();
             var mockClient = mockHandler.CreateClient();
+            mockClient.BaseAddress = new Uri("https://cookpad.com");
             mockHandler
                 .SetupRequest(expectedSearchUrl)
                 .ReturnsResponse(HttpStatusCode.OK, File.ReadAllText("Searchers/Assets/testcookpadsearch.html"));

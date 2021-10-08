@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Bakerscraper.Models;
@@ -16,16 +18,11 @@ namespace Bakerscraper.Searchers
     {
 
         // Constants for HTML retrieval
-        private HttpClient httpClient;
-        private const string baseUrl = "https://cookpad.com";
+        private readonly HttpClient httpClient;
+        public const string baseUrl = "https://cookpad.com";
 
         private const string ingredientRegex = @"(\d*[\/]?\d*)\s?(gram[s]?|g|kilogram[s]?|kg|milliliter[s]?|ml|liter[s]?|l|teaspoon[s]?|tsp|tablespoon[s]?|tbsp|cup[s]?|)\s*(.*)";
         private readonly Regex ingredientMatcher = new(ingredientRegex, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-        public CookpadRecipeSearch()
-        {
-            this.httpClient = new HttpClient();
-        }
 
         public CookpadRecipeSearch(HttpClient httpClient)
         {
@@ -40,43 +37,50 @@ namespace Bakerscraper.Searchers
             {
                 return recipes;
             }
-            var recipeTasks = recipeUris.Select(uri => GetRecipeFromUri(uri));
+            var recipeTasks = new List<Task<Recipe>>();
+            foreach (var uri in recipeUris)
+            {
+                recipeTasks.Add(GetRecipeFromUri(uri));
+            }
             Task.WaitAll(recipeTasks.ToArray());
 
             return recipeTasks.Select(task => task.Result);
         }
 
-        private async Task<IEnumerable<Uri>> GetRecipeUris(string searchString)
+        private async Task<IEnumerable<string>> GetRecipeUris(string searchString)
         {
-            var searchUrl = $"{baseUrl}/uk/search/{Uri.EscapeDataString(searchString)}?event=search.typed_query";
+            var searchUrl = $"/uk/search/{Uri.EscapeDataString(searchString)}?event=search.typed_query";
             var response = await httpClient.GetAsync(searchUrl);
-            var doc = new HtmlDocument();
-            doc.Load(await response.Content.ReadAsStreamAsync());
-
-            var recipeUriNodes = doc.DocumentNode.SelectNodes("//a[@class='block-link__main']");
-
-            if (recipeUriNodes != null && recipeUriNodes.Any())
+            if (response.IsSuccessStatusCode)
             {
-                return recipeUriNodes.Select(recipeUriNode => new Uri(baseUrl + recipeUriNode.Attributes["href"].Value));
+                var doc = new HtmlDocument();
+                doc.Load(await response.Content.ReadAsStreamAsync());
+
+                var recipeUriNodes = doc.DocumentNode.SelectNodes("//a[@class='block-link__main']");
+
+                if (recipeUriNodes != null && recipeUriNodes.Any())
+                {
+                    return recipeUriNodes.Select(recipeUriNode => recipeUriNode.Attributes["href"].Value);
+                }
             }
-            else
-            {
-                return new List<Uri>();
-            }
+            return new List<string>();
         }
 
-        private async Task<Recipe> GetRecipeFromUri(Uri recipeUri)
+        private async Task<Recipe> GetRecipeFromUri(string recipeUri)
         {
             var recipe = new Recipe();
             var recipeResponse = await httpClient.GetAsync(recipeUri);
-            var doc = new HtmlDocument();
-            doc.Load(await recipeResponse.Content.ReadAsStreamAsync());
+            if (recipeResponse.IsSuccessStatusCode)
+            {
+                var doc = new HtmlDocument();
+                doc.Load(await recipeResponse.Content.ReadAsStreamAsync());
 
-            recipe.Name = GenericRecipeSearchHelper.SanitiseString(doc.DocumentNode.SelectSingleNode("//h1[@itemprop='name']").InnerText);
-            recipe.Source = RecipeSearchType.Cookpad;
+                recipe.Name = GenericRecipeSearchHelper.SanitiseString(doc.DocumentNode.SelectSingleNode("//h1[@itemprop='name']").InnerText);
+                recipe.Source = RecipeSearchType.Cookpad;
 
-            recipe.Ingredients = GetRecipeIngredients(doc.GetElementbyId("ingredients"));
-            recipe.Steps = GetRecipeSteps(doc.GetElementbyId("steps"));
+                recipe.Ingredients = GetRecipeIngredients(doc.GetElementbyId("ingredients"));
+                recipe.Steps = GetRecipeSteps(doc.GetElementbyId("steps"));
+            }
 
             return recipe;
         }
@@ -85,22 +89,23 @@ namespace Bakerscraper.Searchers
         {
             var ingredientNodes = ingredientContainer.SelectNodes("//div[@itemprop='ingredients']");
             var matches = ingredientNodes.Select(node => ingredientMatcher.Match(node.InnerText.Trim()));
-            return matches.Select(match => GetRecipeIngredientsFromMatchCollection(match));
+            return matches.Select(match => GetRecipeIngredientsFromMatch(match));
         }
 
-        private RecipeIngredient GetRecipeIngredientsFromMatchCollection(Match collection)
+        private RecipeIngredient GetRecipeIngredientsFromMatch(Match ingredientMatch)
         {
             return new RecipeIngredient
             {
-                Name = GenericRecipeSearchHelper.SanitiseString(collection.Groups[3].Value),
-                Quantity = SimpleConvertStringToDouble(collection.Groups[1].Value),
-                Unit = GetIngredientUnitFromString(collection.Groups[2].Value)
+                Name = GenericRecipeSearchHelper.SanitiseString(ingredientMatch.Groups[3].Value),
+                Quantity = SimpleConvertStringToDouble(ingredientMatch.Groups[1].Value),
+                Unit = GetIngredientUnitFromString(ingredientMatch.Groups[2].Value)
             };
         }
 
-        private IEnumerable<RecipeStep> GetRecipeSteps(HtmlNode stepNode)
+        private IEnumerable<RecipeStep> GetRecipeSteps(HtmlNode stepContainer)
         {
-            return new List<RecipeStep>();
+            var stepNodes = stepContainer.SelectNodes("//div[@itemprop='recipeInstructions']");
+            return stepNodes.Select((node, index) => new RecipeStep { Number = index, Text = GenericRecipeSearchHelper.SanitiseString(node.InnerText) });
         }
 
         private static RecipeIngredientUnit GetIngredientUnitFromString(string unit)
