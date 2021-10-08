@@ -37,10 +37,10 @@ namespace Bakerscraper.Searchers
             httpClient = client;
         }
 
-        public async Task<IEnumerable<Recipe>> Search(string searchString)
+        public async Task<IEnumerable<Recipe>> Search(string searchString, int limit)
         {
             var recipes = new List<Recipe>();
-            var recipeUris = await GetGoodFoodRecipeUris(searchString);
+            var recipeUris = await GetGoodFoodRecipeUris(searchString, limit);
             if (recipeUris.Count() == 0)
             {
                 return recipes;
@@ -58,7 +58,7 @@ namespace Bakerscraper.Searchers
             return recipes;
         }
 
-        private async Task<IEnumerable<Uri>> GetGoodFoodRecipeUris(string searchString)
+        private async Task<IEnumerable<Uri>> GetGoodFoodRecipeUris(string searchString, int limit)
         {
             var response = await httpClient.GetAsync(baseUrl + "search/recipes?q=" + HttpUtility.UrlEncode(searchString));
             var doc = new HtmlDocument();
@@ -67,7 +67,7 @@ namespace Bakerscraper.Searchers
             HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//a[@class='img-container img-container--square-thumbnail']");
             if (nodes != null)
             {
-                return nodes.Select(node => new Uri(baseUrl + node.Attributes["href"].Value));
+                return nodes.Select(node => new Uri(baseUrl + node.Attributes["href"].Value)).Take(limit);
             }
             else
             {

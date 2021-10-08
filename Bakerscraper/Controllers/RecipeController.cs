@@ -32,7 +32,7 @@ namespace Bakerscraper.Controllers
         public async Task<IEnumerable<Recipe>> Search([FromQuery]RecipeSearch searchRequest)
         {
             var searcher = searchFactory.CreateSearch(searchRequest.Type, clientFactory);
-            return await searcher.Search(searchRequest.String);
+            return await searcher.Search(searchRequest.String, searchRequest.Limit);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Bakerscraper.Tests.Controllers
         {   
             // Mock a searcher to avoid using real searcher code in the controller
             var searcherMock = new Mock<IRecipeSearch>();
-            searcherMock.Setup(mock => mock.Search(It.IsAny<string>()).Result).Returns(new List<Recipe>());
+            searcherMock.Setup(mock => mock.Search(It.IsAny<string>(), It.IsAny<int>()).Result).Returns(new List<Recipe>());
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var searchFactoryMock = new Mock<IRecipeSearchFactory>();
             searchFactoryMock.Setup(mock => mock.CreateSearch(RecipeSearchType.BBCGoodFood, httpClientFactoryMock.Object)).Returns(searcherMock.Object);

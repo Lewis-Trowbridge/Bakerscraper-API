@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 using Xunit;
 using FluentAssertions;
 
@@ -28,13 +29,15 @@ namespace Bakerscraper.Tests.Searchers
                 .Verifiable();
             var testSearcher = new BBCGoodFoodRecipeSearch(mockClient);
 
-            await testSearcher.Search(testSearchString);
+            await testSearcher.Search(testSearchString, 2);
 
             mockHandler.VerifyRequest(expectedLink);
         }
 
-        [Fact]
-        public async void BBCGoodFoodSearcher_GivenCorrectString_ReturnsCorrectOutput()
+        [Theory]
+        [InlineData(2)]
+        [InlineData(1)]
+        public async void BBCGoodFoodSearcher_GivenCorrectString_ReturnsCorrectOutput(int limit)
         {
             // Load test data
             var expectedSearchUrl = "https://www.bbcgoodfood.com/search/recipes?q=test";
@@ -63,9 +66,9 @@ namespace Bakerscraper.Tests.Searchers
             var testSearcher = new BBCGoodFoodRecipeSearch(mockClient);
             var testSearchString = "test";
 
-            var expectedRecipes = BBCGoodFoodRecipeSearchTestHelper.GetBBCGoodFoodRecipes();
+            var expectedRecipes = BBCGoodFoodRecipeSearchTestHelper.GetBBCGoodFoodRecipes().Take(limit);
 
-            var realRecipes = await testSearcher.Search(testSearchString);
+            var realRecipes = await testSearcher.Search(testSearchString, limit);
 
             realRecipes.Should().BeEquivalentTo(expectedRecipes);
         }

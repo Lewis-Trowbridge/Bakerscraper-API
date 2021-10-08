@@ -34,19 +34,21 @@ namespace Bakerscraper.Tests.Searchers
 
             var testSearcher = new CookpadRecipeSearch(mockClient);
 
-            await testSearcher.Search(testString);
+            await testSearcher.Search(testString, 2);
 
             mockHandler.VerifyRequest(expectedLink);
         }
 
-        [Fact]
-        public async void CookpadSearcher_GivenString_ReturnsCorrectRecipes()
+        [Theory]
+        [InlineData(2)]
+        [InlineData(1)]
+        public async void CookpadSearcher_GivenString_ReturnsCorrectRecipes(int limit)
         {
             var testSearchString = "cake";
             var expectedSearchUrl = "https://cookpad.com/uk/search/cake?event=search.typed_query";
             var expectedCauliflowerCakeUrl = "https://cookpad.com/uk/recipes/15460366-cauliflower-cake";
             var expectedRhubarbCakeUrl = "https://cookpad.com/uk/recipes/15390388-my-rhubarb-ginger-pistachio-cake";
-            var expectedResult = CookpadRecipeSearchTestHelper.GetCookpadRecipes();
+            var expectedResult = CookpadRecipeSearchTestHelper.GetCookpadRecipes().Take(limit);
 
 
             var mockHandler = new Mock<HttpMessageHandler>();
@@ -64,7 +66,7 @@ namespace Bakerscraper.Tests.Searchers
 
             var testSearcher = new CookpadRecipeSearch(mockClient);
 
-            var actualResult = await testSearcher.Search(testSearchString);
+            var actualResult = await testSearcher.Search(testSearchString, limit);
 
             // Since ASP.NET performs the necessary conversions to return data in a suitable format, it is appropriate to convert the actual result to a list
 

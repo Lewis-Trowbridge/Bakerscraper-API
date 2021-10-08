@@ -7,6 +7,10 @@ using System.IO;
 using System.Net;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
+using FluentAssertions;
+using FluentAssertions.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Bakerscraper.Tests.Functional_Tests
 {
@@ -53,6 +57,34 @@ namespace Bakerscraper.Tests.Functional_Tests
             var response = await client.GetAsync("/api/recipe/search?string=k");
 
             Assert.Equal(expectedResponse, await response.Content.ReadAsStringAsync());
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(5)]
+        public async void Get_RecipeSearchWithLimit_ReturnsSizedList(int size)
+        {
+            var client = _factory.CreateClient();
+
+            var response = await client.GetAsync($"/api/recipe/search?string=cake&type=bbcgoodfood&limit={size}");
+
+            var jsonResponse = JArray.Parse(await response.Content.ReadAsStringAsync());
+
+            jsonResponse.Should().HaveCount(size);
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(int.MaxValue)]
+        [InlineData(int.MinValue)]
+        public async void Get_RecipeSearchWithLimitOutsideOfRange_Returns400(int size)
+        {
+            var client = _factory.CreateClient();
+
+            var response = await client.GetAsync($"/api/recipe/search?string=cake&type=bbcgoodfood&limit={size}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
     }
