@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Trace;
 using Bakerscraper.Factories;
 
 namespace Bakerscraper
@@ -39,6 +40,14 @@ namespace Bakerscraper
                     Version = "v1"
                 });
             });
+
+            services.AddHealthChecks();
+
+            services.AddOpenTelemetryTracing(options => options
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddJaegerExporter()
+            );
             services.AddSingleton<IHttpClientFactory, BakerscraperHttpClientFactory>();
             services.AddSingleton<IRecipeSearchFactory, RecipeSearchFactory>();
         }
@@ -62,6 +71,7 @@ namespace Bakerscraper
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
             });
         }
     }
