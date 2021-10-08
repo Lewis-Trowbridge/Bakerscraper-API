@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using FluentAssertions;
 
 namespace Bakerscraper.Tests.Searchers
 {
@@ -87,7 +88,7 @@ namespace Bakerscraper.Tests.Searchers
 
             var realRecipes = await testSearcher.Search(testSearchString);
 
-            Assert.Equal(expectedRecipes, realRecipes);
+            realRecipes.Should().BeEquivalentTo(expectedRecipes);
         }
     }
 }

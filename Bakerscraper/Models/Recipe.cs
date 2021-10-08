@@ -6,39 +6,11 @@ using Bakerscraper.Enums;
 
 namespace Bakerscraper.Models
 {
-    public class Recipe
+    public record Recipe
     {
         public string Name { get; set; }
         public IEnumerable<RecipeIngredient> Ingredients { get; set; }
         public IEnumerable<RecipeStep> Steps { get; set; }
         public RecipeSearchType Source { get; set; }
-
-        public override bool Equals(object obj)
-        {
-            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
-            {
-                return false;
-            }
-            else
-            {
-                Recipe o = (Recipe)obj;
-                return (Name == o.Name) && (Ingredients.SequenceEqual(o.Ingredients)) && (Steps.SequenceEqual(o.Steps) && (Source == o.Source));
-            }
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Name, Ingredients, Steps, Source);
-        }
-
-        public static bool operator ==(Recipe left, Recipe right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(Recipe left, Recipe right)
-        {
-            return !(left == right);
-        }
     }
 }

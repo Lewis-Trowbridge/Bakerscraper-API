@@ -69,9 +69,6 @@ namespace Bakerscraper.Tests.Searchers
             // Since ASP.NET performs the necessary conversions to return data in a suitable format, it is appropriate to convert the actual result to a list
 
             actualResult.Should().BeEquivalentTo(expectedResult);
-
-            Assert.Equal(expectedResult[0].Ingredients, actualResult.ToList()[0].Ingredients.ToList());
-            Assert.Equal(expectedResult, actualResult.ToList());
         }
     }
 }
