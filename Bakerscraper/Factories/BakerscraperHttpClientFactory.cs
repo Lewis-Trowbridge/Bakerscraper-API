@@ -19,6 +19,12 @@ namespace Bakerscraper.Factories
             HttpClient client;
             switch (name)
             {
+                case BBCGoodFood:
+                    client = new HttpClient
+                    {
+                        BaseAddress = new Uri(BBCGoodFoodRecipeSearch.baseUrl)
+                    };
+                    return client;
                 case Cookpad:
                     var handler = new HttpClientHandler { CookieContainer = new CookieContainer() };
                     client = new HttpClient(handler)
@@ -27,12 +33,6 @@ namespace Bakerscraper.Factories
                     };
                     client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Bakerscraper-API", "1.0"));
                     client.DefaultRequestHeaders.Host = "cookpad.com";
-                    return client;
-                case BBCGoodFood:
-                    client = new HttpClient
-                    {
-                        BaseAddress = new Uri(BBCGoodFoodRecipeSearch.baseUrl)
-                    };
                     return client;
                 default:
                     return new HttpClient();
