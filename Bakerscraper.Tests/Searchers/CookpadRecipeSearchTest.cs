@@ -9,6 +9,7 @@ using System.IO;
 using Moq;
 using Moq.Contrib.HttpClient;
 using Xunit;
+using FluentAssertions;
 using Bakerscraper.Searchers;
 using Bakerscraper.Tests.Searchers.Assets;
 
@@ -65,7 +66,12 @@ namespace Bakerscraper.Tests.Searchers
 
             var actualResult = await testSearcher.Search(testSearchString);
 
-            Assert.Equal(expectedResult, actualResult);
+            // Since ASP.NET performs the necessary conversions to return data in a suitable format, it is appropriate to convert the actual result to a list
+
+            actualResult.Should().BeEquivalentTo(expectedResult);
+
+            Assert.Equal(expectedResult[0].Ingredients, actualResult.ToList()[0].Ingredients.ToList());
+            Assert.Equal(expectedResult, actualResult.ToList());
         }
     }
 }

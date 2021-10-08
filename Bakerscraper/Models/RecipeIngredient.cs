@@ -7,7 +7,7 @@ using Bakerscraper.Enums;
 
 namespace Bakerscraper.Models
 {
-    public struct RecipeIngredient
+    public class RecipeIngredient
     {
         public string Name { get; set; }
         public double? Quantity { get; set; }
@@ -31,6 +31,16 @@ namespace Bakerscraper.Models
         public override int GetHashCode()
         {
             return HashCode.Combine(Name, Quantity, Unit);
+        }
+
+        public static bool operator ==(RecipeIngredient left, RecipeIngredient right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(RecipeIngredient left, RecipeIngredient right)
+        {
+            return !(left == right);
         }
     }
 }

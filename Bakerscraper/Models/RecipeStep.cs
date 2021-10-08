@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Bakerscraper.Models
 {
-    public struct RecipeStep
+    public class RecipeStep
     {
         public int Number { get; set; }
         public string Text { get; set; }
@@ -26,6 +26,16 @@ namespace Bakerscraper.Models
         public override int GetHashCode()
         {
             return HashCode.Combine(Number, Text);
+        }
+
+        public static bool operator ==(RecipeStep left, RecipeStep right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(RecipeStep left, RecipeStep right)
+        {
+            return !(left == right);
         }
     }
 }

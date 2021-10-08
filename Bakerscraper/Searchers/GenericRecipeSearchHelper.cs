@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Bakerscraper.Searchers
 {
@@ -9,7 +10,7 @@ namespace Bakerscraper.Searchers
     {
         public static string SanitiseString(string originalString)
         {
-            return UppercaseFirstLetter(originalString.Trim());
+            return UppercaseFirstLetter(HttpUtility.HtmlDecode(originalString.Trim()));
         }
 
         private static string UppercaseFirstLetter(string original)

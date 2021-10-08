@@ -16,7 +16,7 @@ namespace Bakerscraper.Tests.Searchers.Assets
             {
                 new Recipe
                 {
-                    Name = "Cauliflower cake",
+                    Name = "Cauliflower Cake",
                     Ingredients = new List<RecipeIngredient>
                     {
                         new RecipeIngredient

@@ -92,7 +92,7 @@ namespace Bakerscraper.Searchers
             return matches.Select(match => GetRecipeIngredientsFromMatch(match));
         }
 
-        private RecipeIngredient GetRecipeIngredientsFromMatch(Match ingredientMatch)
+        private static RecipeIngredient GetRecipeIngredientsFromMatch(Match ingredientMatch)
         {
             return new RecipeIngredient
             {
@@ -102,10 +102,10 @@ namespace Bakerscraper.Searchers
             };
         }
 
-        private IEnumerable<RecipeStep> GetRecipeSteps(HtmlNode stepContainer)
+        private static IEnumerable<RecipeStep> GetRecipeSteps(HtmlNode stepContainer)
         {
             var stepNodes = stepContainer.SelectNodes("//div[@itemprop='recipeInstructions']");
-            return stepNodes.Select((node, index) => new RecipeStep { Number = index, Text = GenericRecipeSearchHelper.SanitiseString(node.InnerText) });
+            return stepNodes.Select((node, index) => new RecipeStep { Number = index + 1, Text = GenericRecipeSearchHelper.SanitiseString(node.InnerText) });
         }
 
         private static RecipeIngredientUnit GetIngredientUnitFromString(string unit)
@@ -118,6 +118,7 @@ namespace Bakerscraper.Searchers
                 "ml" or "millilter" or "milliliters" => RecipeIngredientUnit.Milliliters,
                 "tsp" or "teaspoon" or "teaspoons" => RecipeIngredientUnit.Teaspoons,
                 "tbsp" or "tablespoon" or "tablespoons" => RecipeIngredientUnit.Tablespoons,
+                "cup" or "cups" => RecipeIngredientUnit.Cups,
                 _ => RecipeIngredientUnit.Unspecified,
             };
         }

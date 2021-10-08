@@ -6,7 +6,7 @@ using Bakerscraper.Enums;
 
 namespace Bakerscraper.Models
 {
-    public struct Recipe
+    public class Recipe
     {
         public string Name { get; set; }
         public IEnumerable<RecipeIngredient> Ingredients { get; set; }
@@ -29,6 +29,16 @@ namespace Bakerscraper.Models
         public override int GetHashCode()
         {
             return HashCode.Combine(Name, Ingredients, Steps, Source);
+        }
+
+        public static bool operator ==(Recipe left, Recipe right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Recipe left, Recipe right)
+        {
+            return !(left == right);
         }
     }
 }
