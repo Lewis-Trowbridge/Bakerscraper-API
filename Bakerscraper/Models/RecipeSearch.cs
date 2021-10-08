@@ -16,8 +16,8 @@ namespace Bakerscraper.Models
         [JsonConverter(typeof(JsonStringEnumConverter))]
         [Required]
         public RecipeSearchType Type { get; set; }
-        [Range(1, 20)]
-        [DefaultValue(20)]
-        public int Limit { get; set; } = 20;
+        [Range(1, 5)]
+        [DefaultValue(5)]
+        public int Limit { get; set; } = 5;
     }
 }
