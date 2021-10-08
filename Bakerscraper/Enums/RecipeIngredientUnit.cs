@@ -13,6 +13,7 @@ namespace Bakerscraper.Enums
         Liters,
         Teaspoons,
         Tablespoons,
+        Cups,
         Unspecified
     }
 }

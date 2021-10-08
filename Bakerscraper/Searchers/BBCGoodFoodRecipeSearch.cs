@@ -20,7 +20,7 @@ namespace Bakerscraper.Searchers
 
         // Constants for HTML retrieval
         private HttpClient httpClient;
-        private const string baseUrl = "https://www.bbcgoodfood.com/";
+        public const string baseUrl = "https://www.bbcgoodfood.com/";
 
         // Constants for RDF traversal/filtering
         private readonly Uri schemaNameUri = new("http://schema.org/name");
@@ -32,21 +32,15 @@ namespace Bakerscraper.Searchers
         private const string ingredientMatcherString = @"(\d*)?\s*(g|kg|ml|l|tsp|tbsp)?\s*(.*)";
         private readonly Regex ingredientMatcher = new(ingredientMatcherString, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        public BBCGoodFoodRecipeSearch()
-        {
-            httpClient = new HttpClient();
-        }
-
         public BBCGoodFoodRecipeSearch(HttpClient client)
         {
             httpClient = client;
         }
 
-        public async Task<List<Recipe>> Search(string searchString)
+        public async Task<IEnumerable<Recipe>> Search(string searchString)
         {
             var recipes = new List<Recipe>();
-            var searchHTML = await GetGoodFoodSearchHTML(searchString);
-            var recipeUris = GetGoodFoodRecipeUris(searchHTML);
+            var recipeUris = await GetGoodFoodRecipeUris(searchString);
             if (recipeUris.Count() == 0)
             {
                 return recipes;
@@ -64,16 +58,11 @@ namespace Bakerscraper.Searchers
             return recipes;
         }
 
-        private async Task<string> GetGoodFoodSearchHTML(string searchString)
+        private async Task<IEnumerable<Uri>> GetGoodFoodRecipeUris(string searchString)
         {
             var response = await httpClient.GetAsync(baseUrl + "search/recipes?q=" + HttpUtility.UrlEncode(searchString));
-            return await response.Content.ReadAsStringAsync();
-        }
-
-        private IEnumerable<Uri> GetGoodFoodRecipeUris(string searchHTML)
-        {
             var doc = new HtmlDocument();
-            doc.LoadHtml(searchHTML);
+            doc.Load(await response.Content.ReadAsStreamAsync());
 
             HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//a[@class='img-container img-container--square-thumbnail']");
             if (nodes != null)
@@ -131,7 +120,7 @@ namespace Bakerscraper.Searchers
                 {
                     Quantity = quantity,
                     Unit = GetIngredientUnitFromString(matchCollection.Groups[2].Value),
-                    Name = matchCollection.Groups[3].Value.UpperCaseFirst()
+                    Name = GenericRecipeSearchHelper.SanitiseString(matchCollection.Groups[3].Value)
 
                 });
             }

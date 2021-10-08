@@ -1,12 +1,14 @@
 ﻿using Bakerscraper.Searchers;
 using Bakerscraper.Tests.Searchers.Assets;
 using Moq;
-using Moq.Protected;
+using Moq.Contrib.HttpClient;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using FluentAssertions;
 
 namespace Bakerscraper.Tests.Searchers
 {
@@ -19,67 +21,45 @@ namespace Bakerscraper.Tests.Searchers
         {
             var expectedLink = "https://www.bbcgoodfood.com/search/recipes?q=" + expectedSearchString;
             var mockHandler = new Mock<HttpMessageHandler>();
+            var mockClient = mockHandler.CreateClient();
             mockHandler
-                .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.IsAny<HttpRequestMessage>(),
-                  ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(new HttpResponseMessage());
-            var mockClient = new HttpClient(mockHandler.Object);
+                .SetupAnyRequest()
+                .ReturnsResponse(HttpStatusCode.OK)
+                .Verifiable();
             var testSearcher = new BBCGoodFoodRecipeSearch(mockClient);
 
             await testSearcher.Search(testSearchString);
 
-            mockHandler.Protected().Verify(
-                "SendAsync",
-                Times.Once(),
-                ItExpr.Is<HttpRequestMessage>(req => req.RequestUri.ToString() == expectedLink),
-                ItExpr.IsAny<CancellationToken>());
+            mockHandler.VerifyRequest(expectedLink);
         }
 
         [Fact]
         public async void BBCGoodFoodSearcher_GivenCorrectString_ReturnsCorrectOutput()
         {
             // Load test data
-            var testSearchRequest = new HttpRequestMessage(HttpMethod.Get, "https://www.bbcgoodfood.com/search/recipes?q=test");
-            var testMicrowaveRequest = new HttpRequestMessage(HttpMethod.Get, "https://www.bbcgoodfood.com//recipes/microwave-mug-cake");
-            var testMeltRequest = new HttpRequestMessage(HttpMethod.Get, "https://www.bbcgoodfood.com//recipes/melt-middle-mug-cake");
-            var testsearchHtml = File.ReadAllText("Searchers/Assets/testsearch.html");
-            var testMicrowaveHtml = File.ReadAllText("Searchers/Assets/testmicrowave.html");
-            var testMeltHtml = File.ReadAllText("Searchers/Assets/testmeltinthemiddle.html");
-            var testSearchResponse = new HttpResponseMessage { Content = new StringContent(testsearchHtml) };
-            var testMicrowaveResponse = new HttpResponseMessage { Content = new StringContent(testMicrowaveHtml) };
-            var testMeltResponse = new HttpResponseMessage { Content = new StringContent(testMeltHtml) };
+            var expectedSearchUrl = "https://www.bbcgoodfood.com/search/recipes?q=test";
+            var expectedMicrowaveUrl = "https://www.bbcgoodfood.com//recipes/microwave-mug-cake";
+            var expectedMeltUrl = "https://www.bbcgoodfood.com//recipes/melt-middle-mug-cake";
+            var expectedSearchHtml = File.ReadAllText("Searchers/Assets/testsearch.html");
+            var expectedMicrowaveHtml = File.ReadAllText("Searchers/Assets/testmicrowave.html");
+            var expectedMeltHtml = File.ReadAllText("Searchers/Assets/testmeltinthemiddle.html");
 
             // Set up mock HTTP responses
             var mockHandler = new Mock<HttpMessageHandler>();
+            var mockClient = mockHandler.CreateClient();
 
             mockHandler
-               .Protected()
-               .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.Is<HttpRequestMessage>(request => request.RequestUri == testSearchRequest.RequestUri),
-                  ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(testSearchResponse);
+                .SetupRequest(expectedSearchUrl)
+                .ReturnsResponse(HttpStatusCode.OK, expectedSearchHtml);
 
             mockHandler
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.Is<HttpRequestMessage>(request => request.RequestUri == testMicrowaveRequest.RequestUri),
-                  ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(testMicrowaveResponse);
+                .SetupRequest(expectedMicrowaveUrl)
+                .ReturnsResponse(HttpStatusCode.OK, expectedMicrowaveHtml);
 
             mockHandler
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                  "SendAsync",
-                  ItExpr.Is<HttpRequestMessage>(request => request.RequestUri == testMeltRequest.RequestUri),
-                  ItExpr.IsAny<CancellationToken>())
-               .ReturnsAsync(testMeltResponse);
+                .SetupRequest(expectedMeltUrl)
+                .ReturnsResponse(expectedMeltHtml);
 
-            var mockClient = new HttpClient(mockHandler.Object);
             var testSearcher = new BBCGoodFoodRecipeSearch(mockClient);
             var testSearchString = "test";
 
@@ -87,7 +67,7 @@ namespace Bakerscraper.Tests.Searchers
 
             var realRecipes = await testSearcher.Search(testSearchString);
 
-            Assert.Equal(expectedRecipes, realRecipes);
+            realRecipes.Should().BeEquivalentTo(expectedRecipes);
         }
     }
 }

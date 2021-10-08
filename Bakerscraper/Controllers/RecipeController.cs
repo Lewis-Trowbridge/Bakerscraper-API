@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Linq;
 using System.Threading.Tasks;
 using Bakerscraper.Models;
@@ -17,18 +18,20 @@ namespace Bakerscraper.Controllers
     {
 
         private readonly IRecipeSearchFactory searchFactory;
+        private readonly IHttpClientFactory clientFactory;
 
-        public RecipeController(IRecipeSearchFactory searchFactory)
+        public RecipeController(IRecipeSearchFactory searchFactory, IHttpClientFactory clientFactory)
         {
             this.searchFactory = searchFactory;
+            this.clientFactory = clientFactory;
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("search")]
-        public async Task<List<Recipe>> Search([FromQuery]RecipeSearch searchRequest)
+        public async Task<IEnumerable<Recipe>> Search([FromQuery]RecipeSearch searchRequest)
         {
-            var searcher = searchFactory.CreateSearch(searchRequest.Type);
+            var searcher = searchFactory.CreateSearch(searchRequest.Type, clientFactory);
             return await searcher.Search(searchRequest.String);
         }
     }
