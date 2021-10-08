@@ -29,10 +29,10 @@ namespace Bakerscraper.Searchers
             this.httpClient = httpClient;
         }
 
-        public async Task<IEnumerable<Recipe>> Search(string searchString)
+        public async Task<IEnumerable<Recipe>> Search(string searchString, int limit)
         {
             var recipes = new List<Recipe>();
-            var recipeUris = await GetRecipeUris(searchString);
+            var recipeUris = await GetRecipeUris(searchString, limit);
             if (!recipeUris.Any())
             {
                 return recipes;
@@ -47,7 +47,7 @@ namespace Bakerscraper.Searchers
             return recipeTasks.Select(task => task.Result);
         }
 
-        private async Task<IEnumerable<string>> GetRecipeUris(string searchString)
+        private async Task<IEnumerable<string>> GetRecipeUris(string searchString, int limit)
         {
             var searchUrl = $"/uk/search/{Uri.EscapeDataString(searchString)}?event=search.typed_query";
             var response = await httpClient.GetAsync(searchUrl);
@@ -60,7 +60,7 @@ namespace Bakerscraper.Searchers
 
                 if (recipeUriNodes != null && recipeUriNodes.Any())
                 {
-                    return recipeUriNodes.Select(recipeUriNode => recipeUriNode.Attributes["href"].Value);
+                    return recipeUriNodes.Select(recipeUriNode => recipeUriNode.Attributes["href"].Value).Take(limit);
                 }
             }
             return new List<string>();
