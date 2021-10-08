@@ -20,7 +20,7 @@ namespace Bakerscraper.Searchers
 
         // Constants for HTML retrieval
         private HttpClient httpClient;
-        private const string baseUrl = "https://www.bbcgoodfood.com/";
+        public const string baseUrl = "https://www.bbcgoodfood.com/";
 
         // Constants for RDF traversal/filtering
         private readonly Uri schemaNameUri = new("http://schema.org/name");
@@ -31,11 +31,6 @@ namespace Bakerscraper.Searchers
         // Constants for regex patterns
         private const string ingredientMatcherString = @"(\d*)?\s*(g|kg|ml|l|tsp|tbsp)?\s*(.*)";
         private readonly Regex ingredientMatcher = new(ingredientMatcherString, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-        public BBCGoodFoodRecipeSearch()
-        {
-            httpClient = new HttpClient();
-        }
 
         public BBCGoodFoodRecipeSearch(HttpClient client)
         {

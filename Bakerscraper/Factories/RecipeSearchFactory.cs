@@ -15,7 +15,7 @@ namespace Bakerscraper.Factories
         {
             return searchType switch
             {
-                RecipeSearchType.BBCGoodFood => new BBCGoodFoodRecipeSearch(),
+                RecipeSearchType.BBCGoodFood => new BBCGoodFoodRecipeSearch(clientFactory.CreateClient(BakerscraperHttpClientFactory.BBCGoodFood)),
                 RecipeSearchType.Cookpad => new CookpadRecipeSearch(clientFactory.CreateClient(BakerscraperHttpClientFactory.Cookpad)),
                 _ => throw new TypeLoadException(),
             };
