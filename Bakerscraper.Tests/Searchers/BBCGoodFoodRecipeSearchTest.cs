@@ -14,7 +14,7 @@ using FluentAssertions;
 namespace Bakerscraper.Tests.Searchers
 {
     public class BBCGoodFoodRecipeSearchTest
-   {
+    {
         [Theory]
         [InlineData("test", "test")]
         [InlineData("space test", "space+test")]

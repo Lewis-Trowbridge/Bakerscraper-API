@@ -74,4 +74,4 @@ namespace Bakerscraper.Tests.Searchers
         }
     }
 }
-    
+

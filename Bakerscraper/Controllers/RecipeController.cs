@@ -29,7 +29,7 @@ namespace Bakerscraper.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet("search")]
-        public async Task<IEnumerable<Recipe>> Search([FromQuery]RecipeSearch searchRequest)
+        public async Task<IEnumerable<Recipe>> Search([FromQuery] RecipeSearch searchRequest)
         {
             var searcher = searchFactory.CreateSearch(searchRequest.Type, clientFactory);
             return await searcher.Search(searchRequest.String, searchRequest.Limit);

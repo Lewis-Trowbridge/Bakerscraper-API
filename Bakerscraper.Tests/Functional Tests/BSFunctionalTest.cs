@@ -35,7 +35,7 @@ namespace Bakerscraper.Tests.Functional_Tests
             Assert.Equal(expectedResposeCode, response.StatusCode);
 
         }
-        
+
         [Fact]
         public async void Get_SwaggerPage_ReturnsHTML()
         {

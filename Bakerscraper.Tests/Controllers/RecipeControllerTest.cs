@@ -18,7 +18,7 @@ namespace Bakerscraper.Tests.Controllers
     {
         [Fact]
         public async void RecipeController_WhenCalledWithBBCGoodFood_CallsFactoryWithEnum()
-        {   
+        {
             // Mock a searcher to avoid using real searcher code in the controller
             var searcherMock = new Mock<IRecipeSearch>();
             searcherMock.Setup(mock => mock.Search(It.IsAny<string>(), It.IsAny<int>()).Result).Returns(new List<Recipe>());
@@ -33,7 +33,7 @@ namespace Bakerscraper.Tests.Controllers
             await controller.Search(testRequest);
 
             searchFactoryMock.Verify(mock => mock.CreateSearch(RecipeSearchType.BBCGoodFood, httpClientFactoryMock.Object));
-            
+
         }
     }
 }
