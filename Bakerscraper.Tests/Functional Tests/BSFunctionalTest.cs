@@ -56,7 +56,8 @@ namespace Bakerscraper.Tests.Functional_Tests
 
             var response = await client.GetAsync("/api/recipe/search?string=k");
 
-            Assert.Equal(expectedResponse, await response.Content.ReadAsStringAsync());
+            var responseText = await response.Content.ReadAsStringAsync();
+            responseText.Should().BeEquivalentTo(expectedResponse);
         }
 
         [Theory]
