@@ -56,8 +56,11 @@ namespace Bakerscraper.Tests.Functional_Tests
 
             var response = await client.GetAsync("/api/recipe/search?string=k");
 
+            var jExpectedResponse = JArray.Parse(expectedResponse);
+
             var responseText = await response.Content.ReadAsStringAsync();
-            responseText.Should().BeEquivalentTo(expectedResponse);
+            var jResponse = JArray.Parse(responseText);
+            jResponse.Should().BeEquivalentTo(jExpectedResponse);
         }
 
         [Theory]

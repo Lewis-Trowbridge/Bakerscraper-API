@@ -74,7 +74,7 @@ namespace Bakerscraper.Searchers
             var doc = new HtmlDocument();
             doc.Load(await response.Content.ReadAsStreamAsync());
 
-            recipe.Name = doc.DocumentNode.SelectSingleNode("//h1[contains(string(@class),'post-header__title')]").InnerText;
+            recipe.Name = GenericRecipeSearchHelper.SanitiseString(doc.DocumentNode.SelectSingleNode("//div[contains(string(@class),'post-header__title')]//h1").InnerText);
             recipe.Steps = GetSteps(doc.DocumentNode);
             recipe.Ingredients = GetIngredients(doc.DocumentNode);
             recipe.Source = RecipeSearchType.BBCGoodFood;
