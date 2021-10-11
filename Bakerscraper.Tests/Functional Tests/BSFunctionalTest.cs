@@ -51,15 +51,14 @@ namespace Bakerscraper.Tests.Functional_Tests
         [Fact]
         public async void Get_RecipeSearch_ReturnsCorrectJSON()
         {
-            var expectedResponse = File.ReadAllText("Functional Tests/Assets/ksearchjson.json");
             var client = _factory.CreateClient();
 
-            var response = await client.GetAsync("/api/recipe/search?string=k");
-
+            var expectedResponse = File.ReadAllText("Functional Tests/Assets/ksearchjson.json");
             var jExpectedResponse = JArray.Parse(expectedResponse);
 
-            var responseText = await response.Content.ReadAsStringAsync();
-            var jResponse = JArray.Parse(responseText);
+            var response = await client.GetAsync("/api/recipe/search?string=k");
+            var jResponse = JArray.Parse(await response.Content.ReadAsStringAsync());
+
             jResponse.Should().BeEquivalentTo(jExpectedResponse);
         }
 
