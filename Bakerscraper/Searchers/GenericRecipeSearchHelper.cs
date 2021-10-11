@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,11 @@ namespace Bakerscraper.Searchers
             return UppercaseFirstLetter(HttpUtility.HtmlDecode(originalString.Trim()));
         }
 
+        public static string NormaliseString(string originalString)
+        {
+            return originalString.Normalize().Replace("\u00A0", " ");
+        }
+        
         private static string UppercaseFirstLetter(string original)
         {
             if (string.IsNullOrEmpty(original))
