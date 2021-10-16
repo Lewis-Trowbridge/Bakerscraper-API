@@ -48,6 +48,9 @@
         "text": "Snip over a few thyme leaves, then bake for 10 mins until the fish flakes easily when tested. Serve in the dishes."
       }
     ],
-    "source": "BBCGoodFood"
+    "source": {
+      "sourceType": "BBCGoodFood",
+      "sourceUrl": "https://bbcgoodfood.com/recipes/baked-cod-goats-cheese-thyme"
+    }
   }
 ]
