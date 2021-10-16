@@ -16,7 +16,7 @@ namespace Bakerscraper.Searchers
     {
 
         // Constants for HTML retrieval
-        private static HttpClient httpClient;
+        private HttpClient httpClient;
         public const string baseUrl = "https://bbcgoodfood.com";
 
         // Constants for regex patterns
@@ -51,7 +51,6 @@ namespace Bakerscraper.Searchers
 
         private async Task<IEnumerable<string>> GetGoodFoodRecipeUris(string searchString, int limit)
         {
-            var e = $"/search/recipes?q={HttpUtility.UrlEncode(searchString)}";
             var response = await httpClient.GetAsync($"/search/recipes?q={HttpUtility.UrlEncode(searchString)}");
             var doc = new HtmlDocument();
             doc.Load(await response.Content.ReadAsStreamAsync());
