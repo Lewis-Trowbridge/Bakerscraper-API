@@ -16,8 +16,8 @@ namespace Bakerscraper.Searchers
     {
 
         // Constants for HTML retrieval
-        private HttpClient httpClient;
-        public const string baseUrl = "https://www.bbcgoodfood.com/";
+        private static HttpClient httpClient;
+        public const string baseUrl = "https://bbcgoodfood.com";
 
         // Constants for regex patterns
         private const string ingredientMatcherString = @"(\d*)?\s*(g|kg|ml|l|tsp|tbsp)?\s*(.*)";
@@ -49,24 +49,25 @@ namespace Bakerscraper.Searchers
             return recipes;
         }
 
-        private async Task<IEnumerable<Uri>> GetGoodFoodRecipeUris(string searchString, int limit)
+        private async Task<IEnumerable<string>> GetGoodFoodRecipeUris(string searchString, int limit)
         {
-            var response = await httpClient.GetAsync(baseUrl + "search/recipes?q=" + HttpUtility.UrlEncode(searchString));
+            var e = $"/search/recipes?q={HttpUtility.UrlEncode(searchString)}";
+            var response = await httpClient.GetAsync($"/search/recipes?q={HttpUtility.UrlEncode(searchString)}");
             var doc = new HtmlDocument();
             doc.Load(await response.Content.ReadAsStreamAsync());
 
             HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//a[@class='img-container img-container--square-thumbnail']");
             if (nodes != null)
             {
-                return nodes.Select(node => new Uri(baseUrl + node.Attributes["href"].Value)).Take(limit);
+                return nodes.Select(node => node.Attributes["href"].Value).Take(limit);
             }
             else
             {
-                return new List<Uri>();
+                return new List<string>();
             }
         }
 
-        private async Task<Recipe> GetRecipeFromLink(Uri recipeUri)
+        private async Task<Recipe> GetRecipeFromLink(string recipeUri)
         {
             var recipe = new Recipe();
 
@@ -77,7 +78,11 @@ namespace Bakerscraper.Searchers
             recipe.Name = GenericRecipeSearchHelper.SanitiseString(doc.DocumentNode.SelectSingleNode("//div[contains(string(@class),'post-header__title')]//h1").InnerText);
             recipe.Steps = GetSteps(doc.DocumentNode);
             recipe.Ingredients = GetIngredients(doc.DocumentNode);
-            recipe.Source = RecipeSearchType.BBCGoodFood;
+            recipe.Source = new RecipeSource
+            {
+                SourceType = RecipeSearchType.BBCGoodFood,
+                SourceUrl = new Uri(baseUrl + recipeUri)
+            };
 
             return recipe;
         }

@@ -76,8 +76,11 @@ namespace Bakerscraper.Searchers
                 doc.Load(await recipeResponse.Content.ReadAsStreamAsync());
 
                 recipe.Name = GenericRecipeSearchHelper.SanitiseString(doc.DocumentNode.SelectSingleNode("//h1[@itemprop='name']").InnerText);
-                recipe.Source = RecipeSearchType.Cookpad;
-
+                recipe.Source = new RecipeSource
+                {
+                    SourceType = RecipeSearchType.Cookpad,
+                    SourceUrl = new Uri(baseUrl + recipeUri)
+                };
                 recipe.Ingredients = GetRecipeIngredients(doc.GetElementbyId("ingredients"));
                 recipe.Steps = GetRecipeSteps(doc.GetElementbyId("steps"));
             }
