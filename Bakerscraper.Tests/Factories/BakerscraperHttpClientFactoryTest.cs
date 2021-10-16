@@ -28,7 +28,7 @@ namespace Bakerscraper.Tests.Factories
         {
             var actualClient = clientFactory.CreateClient(BakerscraperHttpClientFactory.BBCGoodFood);
 
-            Assert.Equal(new Uri("https://www.bbcgoodfood.com/"), actualClient.BaseAddress);
+            Assert.Equal(new Uri("https://bbcgoodfood.com/"), actualClient.BaseAddress);
         }
 
         [Fact]

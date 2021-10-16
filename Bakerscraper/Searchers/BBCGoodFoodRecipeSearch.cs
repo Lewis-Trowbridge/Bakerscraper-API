@@ -9,9 +9,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Net.Http;
 using HtmlAgilityPack;
-using VDS.RDF;
-using VDS.RDF.Parsing;
-using Soltys.ChangeCase;
 
 namespace Bakerscraper.Searchers
 {
@@ -20,17 +17,11 @@ namespace Bakerscraper.Searchers
 
         // Constants for HTML retrieval
         private HttpClient httpClient;
-        public const string baseUrl = "https://www.bbcgoodfood.com/";
-
-        // Constants for RDF traversal/filtering
-        private readonly Uri schemaNameUri = new("http://schema.org/name");
-        private readonly Uri schemaTextUri = new("http://schema.org/text");
-        private readonly Uri schemaRecipeIngredientUri = new("http://schema.org/recipeIngredient");
-        private readonly Uri schemaRecipeInstructionsUri = new("http://schema.org/recipeInstructions");
+        public const string baseUrl = "https://bbcgoodfood.com";
 
         // Constants for regex patterns
         private const string ingredientMatcherString = @"(\d*)?\s*(g|kg|ml|l|tsp|tbsp)?\s*(.*)";
-        private readonly Regex ingredientMatcher = new(ingredientMatcherString, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex ingredientMatcher = new(ingredientMatcherString, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public BBCGoodFoodRecipeSearch(HttpClient client)
         {
@@ -41,7 +32,7 @@ namespace Bakerscraper.Searchers
         {
             var recipes = new List<Recipe>();
             var recipeUris = await GetGoodFoodRecipeUris(searchString, limit);
-            if (recipeUris.Count() == 0)
+            if (!recipeUris.Any())
             {
                 return recipes;
             }
@@ -58,96 +49,64 @@ namespace Bakerscraper.Searchers
             return recipes;
         }
 
-        private async Task<IEnumerable<Uri>> GetGoodFoodRecipeUris(string searchString, int limit)
+        private async Task<IEnumerable<string>> GetGoodFoodRecipeUris(string searchString, int limit)
         {
-            var response = await httpClient.GetAsync(baseUrl + "search/recipes?q=" + HttpUtility.UrlEncode(searchString));
+            var response = await httpClient.GetAsync($"/search/recipes?q={HttpUtility.UrlEncode(searchString)}");
             var doc = new HtmlDocument();
             doc.Load(await response.Content.ReadAsStreamAsync());
 
             HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//a[@class='img-container img-container--square-thumbnail']");
             if (nodes != null)
             {
-                return nodes.Select(node => new Uri(baseUrl + node.Attributes["href"].Value)).Take(limit);
+                return nodes.Select(node => node.Attributes["href"].Value).Take(limit);
             }
             else
             {
-                return new List<Uri>();
+                return new List<string>();
             }
         }
 
-        private async Task<Recipe> GetRecipeFromLink(Uri recipeUri)
+        private async Task<Recipe> GetRecipeFromLink(string recipeUri)
         {
             var recipe = new Recipe();
 
             var response = await httpClient.GetAsync(recipeUri);
             var doc = new HtmlDocument();
-            doc.LoadHtml(await response.Content.ReadAsStringAsync());
+            doc.Load(await response.Content.ReadAsStreamAsync());
 
-            var jsonLdString = doc.DocumentNode.SelectSingleNode("//script[@type='application/ld+json']").InnerText;
-
-            var jsonLdProcessor = new JsonLdParser();
-            var recipeTripleStore = new ThreadSafeTripleStore();
-
-            jsonLdProcessor.Load(recipeTripleStore, new StringReader(jsonLdString));
-
-            var nameNode = (LiteralNode)recipeTripleStore.GetTriplesWithPredicate(schemaNameUri).First().Object;
-            recipe.Name = nameNode.Value;
-            recipe.Steps = GetStepsFromTripleStore(recipeTripleStore).ToList();
-            recipe.Ingredients = GetIngredientsFromTripleStore(recipeTripleStore).ToList();
-            recipe.Source = RecipeSearchType.BBCGoodFood;
+            recipe.Name = GenericRecipeSearchHelper.SanitiseString(doc.DocumentNode.SelectSingleNode("//div[contains(string(@class),'post-header__title')]//h1").InnerText);
+            recipe.Steps = GetSteps(doc.DocumentNode);
+            recipe.Ingredients = GetIngredients(doc.DocumentNode);
+            recipe.Source = new RecipeSource
+            {
+                SourceType = RecipeSearchType.BBCGoodFood,
+                SourceUrl = new Uri(baseUrl + recipeUri)
+            };
 
             return recipe;
         }
 
-        private IEnumerable<RecipeIngredient> GetIngredientsFromTripleStore(TripleStore tripleStore)
+        private static IEnumerable<RecipeIngredient> GetIngredients(HtmlNode documentNode)
         {
-            var ingredients = new List<RecipeIngredient>();
-            var ingredientTriples = tripleStore.GetTriplesWithPredicate(schemaRecipeIngredientUri);
-            foreach (var ingredientTriple in ingredientTriples)
+            var ingredientNodes = documentNode.SelectNodes("//section[contains(string(@class),'recipe__ingredients')]//li");
+            var matches = ingredientNodes.Select(ingredientNode => ingredientMatcher.Match(ingredientNode.InnerText));
+            return matches.Select(match => new RecipeIngredient
             {
-                var ingredientString = ((LiteralNode)ingredientTriple.Object).Value;
-                var matchCollection = ingredientMatcher.Match(ingredientString);
-                int? quantity = null;
-                try
-                {
-                    quantity = Int32.Parse(matchCollection.Groups[1].Value);
-                }
-                catch (FormatException)
-                {
-                    // Do nothing, as quantity is already null
-                }
-                ingredients.Add(new RecipeIngredient
-                {
-                    Quantity = quantity,
-                    Unit = GetIngredientUnitFromString(matchCollection.Groups[2].Value),
-                    Name = GenericRecipeSearchHelper.SanitiseString(matchCollection.Groups[3].Value)
-
-                });
-            }
-            return ingredients;
+                Quantity = double.TryParse(match.Groups[1].Value, out double quantity) ? quantity : null,
+                Unit = GetIngredientUnitFromString(match.Groups[2].Value),
+                Name = GenericRecipeSearchHelper.SanitiseString(match.Groups[3].Value)
+            });
         }
 
-        private IEnumerable<RecipeStep> GetStepsFromTripleStore(TripleStore tripleStore)
+        private static IEnumerable<RecipeStep> GetSteps(HtmlNode documentNode)
         {
-            var factory = new NodeFactory();
-            var instructionTriples = tripleStore.GetTriplesWithPredicate(schemaRecipeInstructionsUri);
-            var steps = new List<RecipeStep>();
-            var count = 1;
-            var doc = new HtmlDocument();
-            foreach (var instructionTriple in instructionTriples)
+            var stepNodes = documentNode.SelectNodes("//section[contains(string(@class), 'recipe__method-steps')]//li//p");
+            return stepNodes.Select((node, index) => new RecipeStep
             {
-                var textNode = tripleStore.GetTriplesWithSubjectPredicate(instructionTriple.Object, factory.CreateUriNode(schemaTextUri)).First();
-                var textHtml = ((LiteralNode)textNode.Object).Value;
-                doc.LoadHtml(textHtml);
-                steps.Add(new RecipeStep
-                {
-                    Number = count,
-                    // Replace no break space with regular space, since this appears sometimes
-                    Text = doc.DocumentNode.InnerText.Replace("\u00A0", " ")
-                });
-                count++;
-            }
-            return steps;
+                Number = index + 1,
+                // Replace no break space with regular space, since this appears sometimes
+                Text = GenericRecipeSearchHelper.NormaliseString(GenericRecipeSearchHelper.SanitiseString(node.InnerText))
+            });
         }
 
         private static RecipeIngredientUnit GetIngredientUnitFromString(string unit)

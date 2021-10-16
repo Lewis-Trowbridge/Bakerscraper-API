@@ -1,1 +1,56 @@
-﻿[{"name":"Baked cod with goat's cheese & thyme","ingredients":[{"name":"Rapeseed oil","quantity":1,"unit":"Teaspoons"},{"name":"Arlic clove , grated","quantity":1,"unit":"Grams"},{"name":"Spinach","quantity":200,"unit":"Grams"},{"name":"X 125g  skinless cod fillets","quantity":2,"unit":"Unspecified"},{"name":"Soft goat's cheese","quantity":25,"unit":"Grams"},{"name":"Tomatoes , each sliced into 3","quantity":2,"unit":"Unspecified"},{"name":"A few thyme leaves , to serve","quantity":null,"unit":"Unspecified"}],"steps":[{"number":1,"text":"Heat oven to 200C/180C fan/gas 6. Heat the oil in a non-stick pan, add the garlic and fry very briefly to soften it. Tip in the spinach and stir until wilted. Spoon into the base of two gratin dishes, then top with the cod. Spread over some of the goat&rsquo;s cheese and arrange the tomatoes on top."},{"number":2,"text":"Snip over a few thyme leaves, then bake for 10 mins until the fish flakes easily when tested. Serve in the dishes."}],"source":"BBCGoodFood"}]
+﻿[
+  {
+    "name": "Baked cod with goat's cheese & thyme",
+    "ingredients": [
+      {
+        "name": "Rapeseed oil",
+        "quantity": 1,
+        "unit": "Teaspoons"
+      },
+      {
+        "name": "Arlic clove , grated",
+        "quantity": 1,
+        "unit": "Grams"
+      },
+      {
+        "name": "Spinach",
+        "quantity": 200,
+        "unit": "Grams"
+      },
+      {
+        "name": "X 125g  skinless cod fillets",
+        "quantity": 2,
+        "unit": "Unspecified"
+      },
+      {
+        "name": "Soft goat's cheese",
+        "quantity": 25,
+        "unit": "Grams"
+      },
+      {
+        "name": "Tomatoes , each sliced into 3",
+        "quantity": 2,
+        "unit": "Unspecified"
+      },
+      {
+        "name": "A few thyme leaves , to serve",
+        "quantity": null,
+        "unit": "Unspecified"
+      }
+    ],
+    "steps": [
+      {
+        "number": 1,
+        "text": "Heat oven to 200C/180C fan/gas 6. Heat the oil in a non-stick pan, add the garlic and fry very briefly to soften it. Tip in the spinach and stir until wilted. Spoon into the base of two gratin dishes, then top with the cod. Spread over some of the goat’s cheese and arrange the tomatoes on top."
+      },
+      {
+        "number": 2,
+        "text": "Snip over a few thyme leaves, then bake for 10 mins until the fish flakes easily when tested. Serve in the dishes."
+      }
+    ],
+    "source": {
+      "sourceType": "BBCGoodFood",
+      "sourceUrl": "https://bbcgoodfood.com/recipes/baked-cod-goats-cheese-thyme"
+    }
+  }
+]

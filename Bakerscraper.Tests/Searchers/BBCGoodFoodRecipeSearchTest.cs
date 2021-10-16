@@ -20,9 +20,10 @@ namespace Bakerscraper.Tests.Searchers
         [InlineData("space test", "space+test")]
         public async void BBCGoodFoodSearcher_GivenString_CallsHttpClientCorrectly(string testSearchString, string expectedSearchString)
         {
-            var expectedLink = "https://www.bbcgoodfood.com/search/recipes?q=" + expectedSearchString;
+            var expectedLink = "https://bbcgoodfood.com/search/recipes?q=" + expectedSearchString;
             var mockHandler = new Mock<HttpMessageHandler>();
             var mockClient = mockHandler.CreateClient();
+            mockClient.BaseAddress = new("https://bbcgoodfood.com");
             mockHandler
                 .SetupAnyRequest()
                 .ReturnsResponse(HttpStatusCode.OK)
@@ -40,9 +41,9 @@ namespace Bakerscraper.Tests.Searchers
         public async void BBCGoodFoodSearcher_GivenCorrectString_ReturnsCorrectOutput(int limit)
         {
             // Load test data
-            var expectedSearchUrl = "https://www.bbcgoodfood.com/search/recipes?q=test";
-            var expectedMicrowaveUrl = "https://www.bbcgoodfood.com//recipes/microwave-mug-cake";
-            var expectedMeltUrl = "https://www.bbcgoodfood.com//recipes/melt-middle-mug-cake";
+            var expectedSearchUrl = "https://bbcgoodfood.com/search/recipes?q=test";
+            var expectedMicrowaveUrl = "https://bbcgoodfood.com/recipes/microwave-mug-cake";
+            var expectedMeltUrl = "https://bbcgoodfood.com/recipes/melt-middle-mug-cake";
             var expectedSearchHtml = File.ReadAllText("Searchers/Assets/testsearch.html");
             var expectedMicrowaveHtml = File.ReadAllText("Searchers/Assets/testmicrowave.html");
             var expectedMeltHtml = File.ReadAllText("Searchers/Assets/testmeltinthemiddle.html");
@@ -50,6 +51,7 @@ namespace Bakerscraper.Tests.Searchers
             // Set up mock HTTP responses
             var mockHandler = new Mock<HttpMessageHandler>();
             var mockClient = mockHandler.CreateClient();
+            mockClient.BaseAddress = new("https://bbcgoodfood.com");
 
             mockHandler
                 .SetupRequest(expectedSearchUrl)
