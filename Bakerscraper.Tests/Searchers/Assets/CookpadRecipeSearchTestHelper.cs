@@ -86,7 +86,11 @@ namespace Bakerscraper.Tests.Searchers.Assets
                             Text = "It needs to be served just warm, rather that hot or room temperature. Enjoy."
                         }
                     },
-                    Source = RecipeSearchType.Cookpad
+                    Source = new RecipeSource 
+                    {
+                        SourceType = RecipeSearchType.Cookpad,
+                        SourceUrl = new Uri("https://cookpad.com/uk/recipes/15460366-cauliflower-cake")
+                    }
                 },
                 new Recipe
                 {
@@ -135,7 +139,11 @@ namespace Bakerscraper.Tests.Searchers.Assets
                             Text = "Bake in the oven for approx 45-50 mins or until a toothpick comes out from the centre clean. Leave to cool for a few minutes then remove carefully from the springform tin and leave to cool upon a wire rack. Once completely cooled, you can carefully lift it off the metal base. Sprinkle some pistachio nuts over the top, concentrating more in the centre. Serve up and enjoy! :)"
                         }
                     },
-                    Source = RecipeSearchType.Cookpad
+                    Source = new RecipeSource
+                    {
+                        SourceType = RecipeSearchType.Cookpad,
+                        SourceUrl = new Uri("https://cookpad.com/uk/recipes/15390388-my-rhubarb-ginger-pistachio-cake")
+                    }
                 }
             };
         }
